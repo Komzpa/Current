@@ -13,11 +13,11 @@ The core paradigms of Current stay the same, namely:
 * Make it easy to develop in C++ with current.
 * The code should be self-explicable and hard to make a mistake in. 
 
-In practical terms, the trasition to `cmake` means even easier integration for user code. For an example, consider [this one](https://github.com/dkorolev/c5t_trivial_dep_example). The TL;DR: on how to start a Current-first C++ project in a few minutes is:
+In practical terms, the transition to `cmake` means even easier integration for user code. For an example, consider [this one](https://github.com/dkorolev/c5t_trivial_dep_example). The TL;DR: on how to start a Current-first C++ project in a few minutes is:
 
 * Start a repository.
-* Grab the `Makefile` into its root cirectory, copying it from [`C5T/Current/stable/cmake/Makefile`](https://github.com/C5T/Current/blob/stable/cmake/Makefile).
-* Add a [`.gitognore`](https://github.com/dkorolev/c5t_trivial_dep_example/blob/main/.gitignore) file, with ``CMakeLists.txt`, `current/`, `googletest/`, and `.current/` + `.current_debug/`.
+* Grab the `Makefile` into its root directory, copying it from [`C5T/Current/stable/cmake/Makefile`](https://github.com/C5T/Current/blob/stable/cmake/Makefile).
+* Add a [`.gitignore`](https://github.com/dkorolev/c5t_trivial_dep_example/blob/main/.gitignore) file, with ``CMakeLists.txt`, `current/`, `googletest/`, and `.current/` + `.current_debug/`.
 * Put your `*.cc` source files under `src/`, and
 * Just `make` would do the job.
 
