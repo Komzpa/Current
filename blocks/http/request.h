@@ -113,6 +113,17 @@ struct Request final {
     response.DoRespondViaHTTP(std::move(*this));
   }
 
+  // Send JSON string with the appropriate headers and CORS enabled.
+  inline void RespondWithJSON(const std::string& json_value,
+                              net::HTTPResponseCodeValue code = HTTPResponseCode.OK,
+                              net::http::Headers headers = net::http::Headers()) {
+    if (!unique_connection) {
+      CURRENT_THROW(net::AttemptedToSendHTTPResponseMoreThanOnce());
+    }
+    headers.SetCORSHeader();
+    connection.SendHTTPResponse(json_value, code, headers, net::constants::kDefaultJSONContentType);
+  }
+
   template <uint64_t CACHE_SIZE = CURRENT_BRICKS_HTTP_DEFAULT_CHUNK_CACHE_SIZE>
   current::net::HTTPServerConnection::ChunkedResponseSender<CACHE_SIZE> SendChunkedResponse(
       net::HTTPResponseCodeValue code = HTTPResponseCode.OK,

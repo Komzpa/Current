@@ -30,8 +30,8 @@ SOFTWARE.
 #include <map>
 #include <memory>
 #include <thread>
-#include <iostream>  // TODO(dkorolev): More robust logging here.
 
+#include "../../bricks/logging/logger.h"
 #include "../types.h"
 #include "../request.h"
 
@@ -226,8 +226,7 @@ class HTTPServerPOSIX final {
                                 const URLPathArgs::CountMask path_args_count_mask,
                                 F& handler) {
     std::lock_guard<std::mutex> lock(mutex_);
-    return DoRegisterHandler(
-        path, [&handler](Request r) { handler(std::move(r)); }, path_args_count_mask, POLICY);
+    return DoRegisterHandler(path, [&handler](Request r) { handler(std::move(r)); }, path_args_count_mask, POLICY);
   }
 
   template <ReRegisterRoute POLICY = ReRegisterRoute::ThrowOnAttempt>
@@ -372,11 +371,11 @@ class HTTPServerPOSIX final {
 
     // LCOV_EXCL_START
     if (path.empty()) {
-      std::cerr << "HTTP: path is empty.\n";
+      current::logging::LoggerFactory::Get("http").Log("HTTP: path is empty.");
       return nullptr;
     }
     if (path[0] != '/') {
-      std::cerr << "HTTP: path does not start with a slash.\n";
+      current::logging::LoggerFactory::Get("http").Log("HTTP: path does not start with a slash.");
       return nullptr;
     }
     // LCOV_EXCL_STOP
@@ -451,7 +450,8 @@ class HTTPServerPOSIX final {
             // WARNING: This `catch` is really not sufficient, it just logs a message
             // if a user exception occurred in the same thread that ran the handler.
             // DO NOT COUNT ON IT.
-            std::cerr << "HTTP route failed in user code: " << e.what() << '\n';  // LCOV_EXCL_LINE
+            current::logging::LoggerFactory::Get("http").Log(
+                current::strings::Printf("HTTP route failed in user code: %s", e.what()));
           }
         } else {
           connection->SendHTTPResponse(current::net::DefaultNotFoundMessage(),
@@ -468,8 +468,7 @@ class HTTPServerPOSIX final {
       } catch (const current::net::EmptySocketException&) {  // LCOV_EXCL_LINE
         // Silently discard errors if no data was sent in.
       } catch (const current::Exception& e) {  // LCOV_EXCL_LINE
-        // TODO(dkorolev): More reliable logging.
-        std::cerr << "HTTP route failed: " << e.what() << '\n';  // LCOV_EXCL_LINE
+        current::logging::LoggerFactory::Get("http").Log(current::strings::Printf("HTTP route failed: %s", e.what()));
       }
     }
   }
